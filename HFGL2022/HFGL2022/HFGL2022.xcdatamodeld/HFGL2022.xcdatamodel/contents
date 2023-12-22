@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23B74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="LiuShui" representedClassName="LiuShui" syncable="YES">
+        <attribute name="beiZhu" optional="YES" attributeType="String"/>
+        <attribute name="guiHuan" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="guiHuanRiQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="houBeiZhu" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="leiBie" optional="YES" attributeType="String"/>
+        <attribute name="qianXiangMu" optional="YES" attributeType="String"/>
+        <attribute name="qianZhiWu" optional="YES" attributeType="String"/>
+        <attribute name="riQiShiJian" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="sanChuRenYuan" optional="YES" attributeType="String"/>
+        <attribute name="sanChuWuZi" optional="YES" attributeType="String"/>
+        <attribute name="sanChuXiangMu" optional="YES" attributeType="String"/>
+        <attribute name="sanChuZhiWu" optional="YES" attributeType="String"/>
+        <attribute name="suLiang" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="wuXuGuiHuan" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="youChuRu" optional="YES" attributeType="String"/>
+        <attribute name="youDiDian" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="youLeiXing" optional="YES" attributeType="String"/>
+        <attribute name="youLiCheng" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="youQianLiCheng" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="youQingYunQingShao" optional="YES" attributeType="String"/>
+        <attribute name="youQuYu" optional="YES" attributeType="String"/>
+        <attribute name="youSuLiang" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="youYouKuJiaYouZhan" optional="YES" attributeType="String"/>
+        <attribute name="yuJiGuiHuanRiQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="renYuan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RenYuan" inverseName="liuShui" inverseEntity="RenYuan"/>
+        <relationship name="wuZi" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WuZi" inverseName="liuShui" inverseEntity="WuZi"/>
+        <relationship name="xiangMu" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="XiangMu" inverseName="liuShui" inverseEntity="XiangMu"/>
+        <relationship name="zhiWu" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ZhiWu" inverseName="liuShui" inverseEntity="ZhiWu"/>
+    </entity>
+    <entity name="RenYuan" representedClassName="RenYuan" syncable="YES">
+        <attribute name="baoXian" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="baoXianRiQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="baoXianShiChang" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="beiZhu" optional="YES" attributeType="String"/>
+        <attribute name="chuShengRiQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="gongZi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="hunYin" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="jiaZhao" optional="YES" attributeType="String"/>
+        <attribute name="liZhiYuanYin" optional="YES" attributeType="String"/>
+        <attribute name="nianLing" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ruZhiShiJian" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="shenFenZheng" optional="YES" attributeType="String"/>
+        <attribute name="wenHua" optional="YES" attributeType="String"/>
+        <attribute name="xingBie" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="xingMing" optional="YES" attributeType="String"/>
+        <attribute name="zaiZhi" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="zaoPian" optional="YES" attributeType="String"/>
+        <attribute name="zhuZhi" optional="YES" attributeType="String"/>
+        <relationship name="caiGouWu" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="WuZi" inverseName="caiGouRen" inverseEntity="WuZi"/>
+        <relationship name="liuShui" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LiuShui" inverseName="renYuan" inverseEntity="LiuShui"/>
+        <relationship name="tel" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tel" inverseName="renYuan" inverseEntity="Tel"/>
+        <relationship name="wuZi" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="WuZi" inverseName="renYuan" inverseEntity="WuZi"/>
+        <relationship name="xiangMU" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="XiangMu" inverseName="renYuan" inverseEntity="XiangMu"/>
+        <relationship name="zhiWu" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ZhiWu" inverseName="renYuan" inverseEntity="ZhiWu"/>
+    </entity>
+    <entity name="Tel" representedClassName="Tel" syncable="YES">
+        <attribute name="haoMa" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="leiXing" optional="YES" attributeType="String"/>
+        <attribute name="xingMing" optional="YES" attributeType="String"/>
+        <relationship name="renYuan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RenYuan" inverseName="tel" inverseEntity="RenYuan"/>
+    </entity>
+    <entity name="WuZi" representedClassName="WuZi" syncable="YES">
+        <attribute name="baoXiu" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="baoXiuQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="baoZhi" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="baoZhiQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="bianHao" optional="YES" attributeType="String"/>
+        <attribute name="caiGouDi" optional="YES" attributeType="String"/>
+        <attribute name="cheJiaHao" optional="YES" attributeType="String"/>
+        <attribute name="cunFangWeiZhi" optional="YES" attributeType="String"/>
+        <attribute name="danJia" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="danWei" optional="YES" attributeType="String"/>
+        <attribute name="guiGe" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="mingCheng" optional="YES" attributeType="String"/>
+        <attribute name="nengYuanLeiBie" optional="YES" attributeType="String"/>
+        <attribute name="paiGuiShuDi" optional="YES" attributeType="String"/>
+        <attribute name="paiHaoMa" optional="YES" attributeType="String"/>
+        <attribute name="pinPai" optional="YES" attributeType="String"/>
+        <attribute name="quanXin" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="ruKuShiJian" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="shiFouYouKu" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="suLiang" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tuPian" optional="YES" attributeType="String"/>
+        <relationship name="caiGouRen" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RenYuan" inverseName="caiGouWu" inverseEntity="RenYuan"/>
+        <relationship name="leiBie" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WuZiLeiBie" inverseName="wuZi" inverseEntity="WuZiLeiBie"/>
+        <relationship name="liuShui" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LiuShui" inverseName="wuZi" inverseEntity="LiuShui"/>
+        <relationship name="renYuan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RenYuan" inverseName="wuZi" inverseEntity="RenYuan"/>
+        <relationship name="xiangMu" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="XiangMu" inverseName="wuZi" inverseEntity="XiangMu"/>
+    </entity>
+    <entity name="WuZiLeiBie" representedClassName="WuZiLeiBie" syncable="YES">
+        <attribute name="beiZhu" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="mingCheng" optional="YES" attributeType="String"/>
+        <attribute name="suLiang" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="wuZi" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="WuZi" inverseName="leiBie" inverseEntity="WuZi"/>
+    </entity>
+    <entity name="XiangMu" representedClassName="XiangMu" syncable="YES">
+        <attribute name="beiZhu" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="mingCheng" optional="YES" attributeType="String"/>
+        <attribute name="renSu" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="liuShui" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LiuShui" inverseName="xiangMu" inverseEntity="LiuShui"/>
+        <relationship name="renYuan" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RenYuan" inverseName="xiangMU" inverseEntity="RenYuan"/>
+        <relationship name="wuZi" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="WuZi" inverseName="xiangMu" inverseEntity="WuZi"/>
+    </entity>
+    <entity name="ZhiWu" representedClassName="ZhiWu" syncable="YES">
+        <attribute name="beiZhu" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="mingCheng" optional="YES" attributeType="String"/>
+        <attribute name="suLiang" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="liuShui" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LiuShui" inverseName="zhiWu" inverseEntity="LiuShui"/>
+        <relationship name="renYuan" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RenYuan" inverseName="zhiWu" inverseEntity="RenYuan"/>
+    </entity>
+</model>
