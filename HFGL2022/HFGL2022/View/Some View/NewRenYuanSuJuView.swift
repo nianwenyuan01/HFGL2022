@@ -11,15 +11,20 @@ import CoreData
 struct NewRenYuanSuJuView: View {
     let renYuan: FetchedResults<RenYuan>.Element
     @Environment(\.managedObjectContext) private var viewContext
-//    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \XiangMu.mingCheng, ascending: true)], animation: .default)
-//    var xiangMus: FetchedResults<XiangMu>
-//    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \ZhiWu.mingCheng, ascending: true)], animation: .default)
-//    var zhiWus: FetchedResults<ZhiWu>
-//    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Tel.haoMa, ascending: true)], animation: .default)
-//    var tels: FetchedResults<Tel>
+    
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \RenYuan.xingMing, ascending: true)], animation: .default)
+    var renYuans: FetchedResults<RenYuan>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \ZhiWu.mingCheng, ascending: true)], animation: .default)
+    var zhiWus: FetchedResults<ZhiWu>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \XiangMu.mingCheng, ascending: true)], animation: .default)
+    var xiangMus: FetchedResults<XiangMu>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Tel.haoMa, ascending: true)], animation: .default)
+    var tels: FetchedResults<Tel>
+    
+    let isSheetMolde: Bool
     
     @State var edit: Bool = false
-    @State private var isShowAlert1: Bool = false
+    @State private var isShowAlertCongMing: Bool = false
     @State var showXiangMuXuanZheView1: Bool = false
     @State var showXiangMuXuanZheView2: Bool = false
     @State var showXiangMuXuanZheView3: Bool = false
@@ -598,26 +603,250 @@ struct NewRenYuanSuJuView: View {
                     }
                 }
             }
+            .gesture(
+            DragGesture()
+                .onChanged{
+                    _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
+                                                    to: nil,
+                                                    from: nil,
+                                                    for: nil)
+                }
+            )
             .navigationTitle(edit ? "编辑信息" : "人员详情")
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.grouped)
             .navigationBarBackButtonHidden(edit ? true : false)
-            .navigationBarItems(leading: Button(action: {
-                withAnimation {edit = false}
-//                edit = false
-            }, label: {
-                if edit {
-                    Text("取消")
+            .navigationBarItems(leading: xAnNiu(edit: $edit, bool: isSheetMolde), trailing: Button(action: {
+                if !edit {
+                    withAnimation {edit.toggle()}
                 }
-            }).controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule).opacity(edit ? 1 : 0), trailing: Button(action: {
-                withAnimation {edit.toggle()}
+                else {
+                    if editRenYuanXinXiPanDuan() {
+                        if chaChong() {
+                            editRenYuanXinXiDoneAndSave(tels: tels)
+                            withAnimation {edit.toggle()}
+                        }
+                        else {
+                            isShowAlertCongMing = true
+                        }
+                    }
+                    else {}
+                }
             }, label: {
-                edit ? Text("完成") : Text("编辑")
-            }).controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule))
+                if !edit {
+                    Text("编辑")
+                } else {
+                    Text("完成")
+                }
+            }).disabled(!editRenYuanXinXiPanDuan()).controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule))
+            .alert(isPresented: $isShowAlertCongMing) {
+                Alert(title: Text("错误"), message: Text("与现有人员重名。"))
+            }
+        }
+        
+    }
+//查重
+    private func chaChong() -> Bool {
+        var bool: Bool = true
+        if renYuan.xingMing != xingMing {
+            for i in renYuans {
+                if i.xingMing == xingMing {
+                    bool = false
+                }
+            }
+        }
+        return bool
+    }
+//信息判断是否能保存
+    private func editRenYuanXinXiPanDuan() -> Bool {
+        var xiangmubool: Bool = false
+        let xiangmuarr = [xiangMu1, xiangMu2, xiangMu3]
+        for i in xiangmuarr {
+            if i != "" {
+                xiangmubool = true
+            }
+        }
+        var telbool:Bool = false
+        let telarr: [String] = [tel1, tel2, tel3, tel4, tel5]
+        for i in telarr {
+            if i != "" {telbool = true}
+        }
+        if xingMing == "" || zhiWu == "" ||  shenFenZheng == "" || jiaZhao == "" || zhuZhi == "" || wenHua == "" || !xiangmubool || !telbool {
+            return false
+        }else{return true}
+    }
+//保存
+    private func editRenYuanXinXiDoneAndSave(tels: FetchedResults<Tel>) {
+        
+        //更名流水记录
+        if renYuan.xingMing != xingMing {
+            LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: nil, lieBie: "基本信息_变动_姓名", beizhu: "\(renYuan.xingMing ?? "")", houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+            renYuan.xingMing = xingMing
+        }
+        renYuan.xingBie = xingBie
+        renYuan.chuShengRiQi = chuShengRiQi
+        renYuan.jiaZhao = jiaZhao
+        renYuan.zhuZhi = zhuZhi
+        renYuan.baoXian = baoXian
+        renYuan.baoXianRiQi = baoXianRiQi
+        renYuan.baoXianShiChang = baoXianShiChang
+        if renYuan.zaiZhi != zaiZhi {
+            renYuan.zaiZhi = zaiZhi
+            //            在职流水记录
+            LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: nil, lieBie: "在职_变动", beizhu: zaiZhi ? "复职" : "离职", houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+        }
+        renYuan.liZhiYuanYin = liZhiYuanYin
+        //        入职时间变更流水记录
+        if renYuan.ruZhiShiJian != ruZhiShiJian {
+            LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: nil, lieBie: "基本信息_变动_入职时间", beizhu: renYuan.ruZhiShiJian?.dateString(), houbeizhu: ruZhiShiJian.dateString(), sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+            renYuan.ruZhiShiJian = ruZhiShiJian
+        }
+        renYuan.hunYin = hunYin
+        renYuan.wenHua = wenHua
+        //        备注流水
+        if renYuan.beiZhu != beiZhu {
+            LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: nil, lieBie: "备注更新", beizhu: renYuan.beiZhu, houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+            renYuan.beiZhu = beiZhu
+        }
+        
+        //        电话全部删除
+        for i in tels {
+            if i.renYuan == renYuan {
+                i.managedObjectContext?.delete(i)
+            }
+        }
+        //        电话全部重新加回来
+        if tel1 != "" {
+            let newTel1 = Tel(context: viewContext)
+            newTel1.id = UUID()
+            newTel1.haoMa = tel1
+            newTel1.leiXing = "手机1"
+            newTel1.renYuan = renYuan
+        }
+        if tel2 != "" {
+            let newTel2 = Tel(context: viewContext)
+            newTel2.id = UUID()
+            newTel2.haoMa = tel2
+            newTel2.leiXing = "手机2"
+            newTel2.renYuan = renYuan
+        }
+        if tel3 != "" {
+            let newTel3 = Tel(context: viewContext)
+            newTel3.id = UUID()
+            newTel3.haoMa = tel3
+            newTel3.leiXing = "手机3"
+            newTel3.renYuan = renYuan
+        }
+        if tel4 != "" {
+            let newTel4 = Tel(context: viewContext)
+            newTel4.id = UUID()
+            newTel4.haoMa = tel4
+            newTel4.leiXing = "手机4"
+            newTel4.renYuan = renYuan
+        }
+        if tel5 != "" {
+            let newTel5 = Tel(context: viewContext)
+            newTel5.id = UUID()
+            newTel5.haoMa = tel5
+            newTel5.leiXing = "手机5"
+            newTel5.renYuan = renYuan
+        }
+        //        职务
+        if renYuan.zhiWu?.mingCheng != zhiWu {
+            for i in zhiWus {
+                if i.mingCheng == zhiWu {
+                    
+                    //                流水业务变更
+                    LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: i, xiangmu: nil, lieBie: "职务_变动", beizhu: nil, houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: i.mingCheng, qianZhiWu: renYuan.zhiWu?.mingCheng, qianXiangMu: nil)
+                    i.addToRenYuan(renYuan)
+                }
+            }
+        }
+
+        //        关于项目的流水，要实现“退出”和“加入”的两个流水，涉及新旧比对
+        //        获取旧项目
+        var jiuxiangmuMC: [String] = []
+        for i in renYuan.xiangMuArray {
+            jiuxiangmuMC.append(i.mingCheng ?? "")
+        }
+        //        获取新项目
+        var xinxiangmuMC: [String] = []
+        if xiangMu1 != "" {xinxiangmuMC.append(xiangMu1)}
+        if xiangMu2 != "" {xinxiangmuMC.append(xiangMu2)}
+        if xiangMu3 != "" {xinxiangmuMC.append(xiangMu3)}
+        //        新项目需不需要加入？
+        for xinxiangmu in xinxiangmuMC {
+            var addxin = true
+            for jiuxiangmu in jiuxiangmuMC {
+                if xinxiangmu == jiuxiangmu {
+                    addxin = false
+                }
+            }
+            if addxin {
+                for i in xiangMus {
+                    if i.mingCheng == xinxiangmu {
+                        //                        记录流水
+                        LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: i, lieBie: "项目_变动_进入", beizhu: nil, houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: i.mingCheng, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+
+                        //                        加入新项目
+                        i.addToRenYuan(renYuan)
+                    }
+                }
+            }
+        }
+        //        旧项目是否需要删除？
+        for jiuxiangmu in jiuxiangmuMC {
+            var deletjiu = true
+            for xinxiangmu in xinxiangmuMC {
+                if jiuxiangmu == xinxiangmu {
+                    deletjiu = false
+                }
+            }
+            if deletjiu {
+                for i in xiangMus {
+                    if i.mingCheng == jiuxiangmu {
+                        //                        记录流水
+                        LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: i, lieBie: "项目_变动_退出", beizhu: nil, houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: i.mingCheng, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+
+                        //                        删除旧项目
+                        i.removeFromRenYuan(renYuan)
+                    }
+                }
+            }
+        }
+        do{
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
 }
-
+//关闭、取消按钮
+private struct xAnNiu: View {
+    @Binding var edit: Bool
+    let bool: Bool
+    @Environment(\.dismiss) private var dismiss
+    var body: some View{
+        if edit {
+            Button {
+                withAnimation {edit = false}
+            } label: {
+                Text("取消")
+            }
+            .controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule).opacity(edit ? 1 : 0)
+        }
+        if bool {
+            Button {
+                dismiss()
+            } label: {
+                Text("关闭")
+            }
+            .controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule)
+        }
+    }
+}
 
 
 //项目选择页面
@@ -760,3 +989,6 @@ struct TelView: View {
 //#Preview {
 //    NewRenYuanSuJuView()
 //}
+
+
+

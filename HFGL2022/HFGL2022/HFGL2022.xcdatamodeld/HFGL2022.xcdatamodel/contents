@@ -70,7 +70,7 @@
         <attribute name="baoXiuQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="baoZhi" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="baoZhiQi" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="bianHao" optional="YES" attributeType="String"/>
+        <attribute name="bianHao" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="caiGouDi" optional="YES" attributeType="String"/>
         <attribute name="cheJiaHao" optional="YES" attributeType="String"/>
         <attribute name="cunFangWeiZhi" optional="YES" attributeType="String"/>

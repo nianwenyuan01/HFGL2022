@@ -510,7 +510,7 @@ struct EditRenYuanView: View {
         }
         return bool
     }
-    public func editRenYuanXinXiPanDuan() -> Bool {
+    private func editRenYuanXinXiPanDuan() -> Bool {
         var xiangmubool: Bool = false
         let xiangmuarr = [xiangMu1, xiangMu2, xiangMu3]
         for i in xiangmuarr {
@@ -527,23 +527,13 @@ struct EditRenYuanView: View {
             return false
         }else{return true}
     }
-    public func editRenYuanXinXiDoneAndSave(tels: FetchedResults<Tel>) {
+    func editRenYuanXinXiDoneAndSave(tels: FetchedResults<Tel>) {
         
 //        更名流水记录
         if renYuan.xingMing != xingMing {
             LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: renYuan, zhiwu: nil, xiangmu: nil, lieBie: "基本信息_变动_姓名", beizhu: "\(renYuan.xingMing ?? "")", houbeizhu: nil, sanRenYuan: xingMing, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
             renYuan.xingMing = xingMing
         }
-        
-        
-//        LiuShuiJiLu(lieBie: "sdfa")
-        
-        
-        
-        
-        
-        
-        
         renYuan.xingBie = xingBie
         renYuan.chuShengRiQi = chuShengRiQi
         renYuan.jiaZhao = jiaZhao

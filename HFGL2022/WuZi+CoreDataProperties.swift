@@ -18,7 +18,7 @@ extension WuZi {
 
     @NSManaged public var baoXiuQi: Date?
     @NSManaged public var baoZhiQi: Date?
-    @NSManaged public var bianHao: String?
+    @NSManaged public var bianHao: Int32
     @NSManaged public var cheJiaHao: String?
     @NSManaged public var paiHaoMa: String?
     @NSManaged public var paiGuiShuDi: String?

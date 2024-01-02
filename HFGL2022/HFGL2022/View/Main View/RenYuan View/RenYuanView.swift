@@ -18,7 +18,8 @@ struct RenYuanView: View {
             List {
                 ForEach(renYuans) { renYuan in
                     NavigationLink {
-                        RenYuanInfo(isShowDismissButton: false, viewSheetMolde: false, renYuanId: renYuan.id!)
+                        NewRenYuanSuJuView(renYuan: renYuan, isSheetMolde: false, xingMing: renYuan.xingMing ?? "", xingBie: renYuan.xingBie, zaiZhi: renYuan.zaiZhi, zhuZhi: renYuan.zhuZhi ?? "", wenHua: renYuan.wenHua ?? "", shenFenZheng: renYuan.shenFenZheng ?? "", ruZhiShiJian: renYuan.ruZhiShiJian ?? Date(), nianLing: renYuan.nianLing, liZhiYuanYin: renYuan.liZhiYuanYin ?? "", jiaZhao: renYuan.jiaZhao  ?? "", hunYin: renYuan.hunYin, chuShengRiQi: renYuan.chuShengRiQi ?? Date(), beiZhu: renYuan.beiZhu  ?? "", baoXianShiChang: renYuan.baoXianShiChang, baoXianRiQi: renYuan.baoXianRiQi ?? Date(), baoXian: renYuan.baoXian,zhiWu: renYuan.zhiWu?.mingCheng ?? "", tel: renYuan.telArray, telArray: telArrayArray(array: renYuan.telArray), tel1: telSuLiang(array: renYuan.telArray)[0], tel2: telSuLiang(array: renYuan.telArray)[1], tel3: telSuLiang(array: renYuan.telArray)[2], tel4: telSuLiang(array: renYuan.telArray)[3], tel5: telSuLiang(array: renYuan.telArray)[4], xiangMuArray: xiangMuArrayArray(array: renYuan.xiangMuArray), xiangMu1: xiangMuSuLiang(array: renYuan.xiangMuArray)[0], xiangMu2: xiangMuSuLiang(array: renYuan.xiangMuArray)[1], xiangMu3: xiangMuSuLiang(array: renYuan.xiangMuArray)[2])
+//                        RenYuanInfo(isShowDismissButton: false, viewSheetMolde: false, renYuanId: renYuan.id!)
                     } label: {
                         HStack{
                             Image("touxiang111")
@@ -89,7 +90,7 @@ struct RenYuanView: View {
                         self.showAddRenYuanView = true
                     }) {
                         Image(systemName: "plus")
-                    }.fullScreenCover(isPresented: self.$showAddRenYuanView, content: {AddRenYuanView()})
+                    }.fullScreenCover(isPresented: self.$showAddRenYuanView, content: {AddRenYuanView(leixing: ZhiWuLeiXing.默认)})
                 }
             }
             .navigationTitle("人员总表")
@@ -170,14 +171,51 @@ struct RenYuanView: View {
             do {
                 try viewContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
     }
+    //    人员电话数量生成的Int数组，生成后才不会越界
+        func telArrayArray(array: [Tel]) -> [Int] {
+            var intArray: [Int] = []
+            for i in 1...array.count {
+                intArray.append(i)
+            }
+            return intArray
+        }
+    //    人员电话数组，生成后才不会越界
+        func telSuLiang(array: [Tel]) -> [String] {
+            var telHaoMaArray: [String] = []
+            for i in array {
+                telHaoMaArray.append(i.haoMa ?? "")
+            }
+            while telHaoMaArray.count < 5 {
+                telHaoMaArray.append("")
+            }
+            return telHaoMaArray
+        }
+    //    人员项目数量生成的Int数组，生成后才不会越界
+        func xiangMuArrayArray(array: [XiangMu]) -> [Int] {
+            var intArray: [Int] = []
+            for i in 1...array.count {
+                intArray.append(i)
+            }
+            return intArray
+        }
+    //    人员项目数组，生成后才不会越界
+        func xiangMuSuLiang(array: [XiangMu]) -> [String] {
+            var xiangMuMingChengArray: [String] = []
+            for i in array {
+                xiangMuMingChengArray.append(i.mingCheng ?? "")
+            }
+            while xiangMuMingChengArray.count < 3 {
+                xiangMuMingChengArray.append("")
+            }
+            return xiangMuMingChengArray
+        }
 }
+
 
 struct RenYuanView_Previews: PreviewProvider {
     static var previews: some View {

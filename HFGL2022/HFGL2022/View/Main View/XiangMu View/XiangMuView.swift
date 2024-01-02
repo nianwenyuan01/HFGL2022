@@ -35,7 +35,7 @@ struct XiangMuView: View {
 //                        self.showModalRenYuanView = false
                         self.showXiangMuView1 = true
                     }) {
-                        Label("Add Item", systemImage: "plus")
+                        Image(systemName: "plus")
                     }.sheet(isPresented: self.$showXiangMuView1, content: {AddXiangMuView()})
                 })
             })

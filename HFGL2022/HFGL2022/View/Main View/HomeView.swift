@@ -44,7 +44,8 @@ struct HomeView: View {
                         NaviHomeButton(dizhi: "业务功能页面", title: "业务功能、考核、调任等", image: "star", imageColor: Color.brown, count: 0, countColor: Color.green, info: "", infoColor: Color.blue)
                         Spacer()
                     }
-//                    Form {
+
+                    GroupBox {
                         VStack{
                             NavigationLink(destination: ZhiWuView(), label: {
                                 Text("职务列表")
@@ -58,19 +59,10 @@ struct HomeView: View {
                             NavigationLink(destination: {YouListView()}, label: {
                                 Text("加油列表")
                             })
-                            
-                            ForEach(renYuans, id: \.self) { renYuan in
-                                if renYuan.xingMing == "333" {
-                                    NavigationLink(destination: {NewRenYuanSuJuView(renYuan: renYuan, xingMing: renYuan.xingMing ?? "", xingBie: renYuan.xingBie, zaiZhi: renYuan.zaiZhi, zhuZhi: renYuan.zhuZhi ?? "", wenHua: renYuan.wenHua ?? "", shenFenZheng: renYuan.shenFenZheng ?? "", ruZhiShiJian: renYuan.ruZhiShiJian ?? Date(), nianLing: renYuan.nianLing, liZhiYuanYin: renYuan.liZhiYuanYin ?? "", jiaZhao: renYuan.jiaZhao  ?? "", hunYin: renYuan.hunYin, chuShengRiQi: renYuan.chuShengRiQi ?? Date(), beiZhu: renYuan.beiZhu  ?? "", baoXianShiChang: renYuan.baoXianShiChang, baoXianRiQi: renYuan.baoXianRiQi ?? Date(), baoXian: renYuan.baoXian,zhiWu: renYuan.zhiWu?.mingCheng ?? "", tel: renYuan.telArray, telArray: telArrayArray(array: renYuan.telArray), tel1: telSuLiang(array: renYuan.telArray)[0], tel2: telSuLiang(array: renYuan.telArray)[1], tel3: telSuLiang(array: renYuan.telArray)[2], tel4: telSuLiang(array: renYuan.telArray)[3], tel5: telSuLiang(array: renYuan.telArray)[4], xiangMuArray: xiangMuArrayArray(array: renYuan.xiangMuArray), xiangMu1: xiangMuSuLiang(array: renYuan.xiangMuArray)[0], xiangMu2: xiangMuSuLiang(array: renYuan.xiangMuArray)[1], xiangMu3: xiangMuSuLiang(array: renYuan.xiangMuArray)[2])}, label: {
-                                        Text("11111")
-                                    })
-                                }
-                            }
-                            
-                            
-                            
                         }
-//                    }
+                    }
+                        
+
                 }
             }
             .navigationTitle("HFGL")

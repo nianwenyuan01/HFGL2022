@@ -36,7 +36,7 @@ struct ZhiWuView: View {
 //                        self.showModalRenYuanView = false
                         self.showWuZhiView1 = true
                     }) {
-                        Label("Add Item", systemImage: "plus")
+                        Image(systemName: "plus")
                     }.fullScreenCover(isPresented: self.$showWuZhiView1, content: {AddZhiWuView()})
                 })
             })
@@ -62,6 +62,8 @@ struct ZhiWuView: View {
 }
 
 struct AddZhiWuView: View {
+    
+    
     @State private var isShowAlert1: Bool = false
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss1

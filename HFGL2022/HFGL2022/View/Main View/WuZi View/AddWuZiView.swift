@@ -25,10 +25,12 @@ struct AddWuZiView: View {
     @State var showLeiBieXuanZheView: Bool = false
     @State var showXiangMuXuanZheView: Bool = false
     
+    let leixing: WuZiLeiXing
+    let mingChengBool: Bool
     @State var danWei: String = "个"
     @State var suLiang: Int32 = 1
     @State var xiangMu: String = ""
-    @State var bianHao: String
+    @State var bianHao: Int32
     @State var leiBie: String = ""
     @State var mingCheng: String = ""
     @State var nengYuanLeiBie: String = ""
@@ -43,8 +45,11 @@ struct AddWuZiView: View {
     @State var baoZhiQi: Date = Date()
     @State var caiGouDi: String = ""
     @State var caiGouRen: String = ""
+    @State var inttt: Int = 10
  
+    
     var body: some View {
+        
         NavigationStack{
             Image("touxiang111")
                 .resizable()
@@ -54,37 +59,156 @@ struct AddWuZiView: View {
                 .padding(.leading)
             List(content: {
                 Group(content: {
+//                    TextField("", value: $inttt, formatter: NumberFormatter())
+//                    Button {
+//                        ceshi(int: inttt)
+//                    } label: {
+//                        Text("sfsfsfsdfsdfsdfsdf")
+//                    }
+
+                    
                     Section(content: {
+                        //名称
                         HStack{
-                            mingCheng == "" ? Text("名称：").foregroundColor(.red) : Text("名称：")
-                            TextField("请输入物资名称", text: $mingCheng)
+                            if leiBie == "车辆" {
+                                mingCheng == "" ? Text("名称：").foregroundColor(.red) : Text("名称：")
+                                if mingChengBool {
+                                    TextField("请输入车辆名称", text: $mingCheng)
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text(mingCheng)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            if leiBie == "油库" {
+                                mingCheng == "" ? Text("名称：").foregroundColor(.red) : Text("名称：")
+                                if mingChengBool {
+                                    TextField("请输入油库名称", text: $mingCheng)
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text(mingCheng)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            if leiBie != "车辆" && leiBie != "油库" {
+                                mingCheng == "" ? Text("名称：").foregroundColor(.red) : Text("名称：")
+                                if mingChengBool {
+                                    TextField("请输入物资名称", text: $mingCheng)
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text(mingCheng)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                        .onChange(of: mingCheng) { newValue in
+                            bianHao = bianHaoJiSuan(wuZis: wuZis, mingCheng: newValue)
+                            print("\(newValue)")
+                        }
+                        //编号
+                        HStack{
+                            bianHao == 0 ? Text("编号：").foregroundColor(.red) : Text("编号：")
+                            Text ("#").foregroundColor(.gray)
+                            TextField("请输入编号", value: $bianHao, formatter: NumberFormatter())
                                 .foregroundColor(.gray)
                         }
+                        //数量，单位
                         HStack{
-                            bianHao == "" ? Text("编号：").foregroundColor(.red) : Text("编号：")
-                            TextField("请输入物资编号", text: $bianHao)
-                                .foregroundColor(.gray)
+                            if leiBie == "车辆" {
+                                suLiang == 0 ? Text("数量：").foregroundColor(.red) : Text("数量：")
+                                Text("\(suLiang)")
+                                    .frame(width: 80)
+                                Text(danWei)
+                                    .frame(width: 80)
+                                Spacer()
+                            }
+                            if leiBie == "油库" {
+                                suLiang == 0 ? Text("数量：").foregroundColor(.red) : Text("数量：")
+                                TextField("请输入数量", value: $suLiang, formatter: NumberFormatter())
+                                    .frame(width: 80)
+                                Text(danWei)
+                                    .frame(width: 80)
+                                Spacer()
+                            }
+                            if leiBie != "车辆" && leiBie != "油库" {
+                                suLiang == 0 ? Text("数量：").foregroundColor(.red) : Text("数量：")
+                                TextField("请输入数量", value: $suLiang, formatter: NumberFormatter())
+                                    .frame(width: 80)
+                                TextField("单位", text: $danWei)
+                                    .frame(width: 80)
+                                Spacer()
+                            }
                         }
+                        //分类，类别
                         HStack{
-                            suLiang == 0 ? Text("数量：").foregroundColor(.red) : Text("数量：")
-                            TextField("请输入数量", value: $suLiang, formatter: NumberFormatter())
-                                .frame(width: 80)
-                            TextField("单位", text: $danWei)
-                                .frame(width: 50)
-                            Spacer()
+                            if leixing != WuZiLeiXing.默认 {
+                                if leiBie == "车辆" {
+                                    leiBie == "" ? Text("分类：").foregroundColor(.red) : Text("分类：").foregroundColor(Color("wwysBlack"))
+                                    Text(leiBie)
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                }
+                                if leiBie == "油库" {
+                                    leiBie == "" ? Text("分类：").foregroundColor(.red) : Text("分类：").foregroundColor(Color("wwysBlack"))
+                                    Text(leiBie)
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                }
+                            }
+                            else {
+                                if leiBie == "车辆" {
+                                    leiBie == "" ? Text("分类：").foregroundColor(.red) : Text("分类：").foregroundColor(Color("wwysBlack"))
+                                    Text(leiBie)
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                    Button(action: {
+                                        self.showLeiBieXuanZheView = true
+                                    }, label: {
+                                        leiBie == "" ? Text("选择类别") : Text("更改")
+                                    }).sheet(isPresented: $showLeiBieXuanZheView, content: {
+                                        LeiBieXuanZheView(leiBieGet: $leiBie)
+                                    })
+                                }
+                                if leiBie == "油库" {
+                                    leiBie == "" ? Text("分类：").foregroundColor(.red) : Text("分类：").foregroundColor(Color("wwysBlack"))
+                                    Text(leiBie)
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                    Button(action: {
+                                        self.showLeiBieXuanZheView = true
+                                    }, label: {
+                                        leiBie == "" ? Text("选择类别") : Text("更改")
+                                    }).sheet(isPresented: $showLeiBieXuanZheView, content: {
+                                        LeiBieXuanZheView(leiBieGet: $leiBie)
+                                    })
+                                }
+                                if leiBie != "车辆" && leiBie != "油库" {
+                                    leiBie == "" ? Text("分类：").foregroundColor(.red) : Text("分类：").foregroundColor(Color("wwysBlack"))
+                                    Text(leiBie)
+                                        .foregroundColor(.gray)
+                                    Spacer()
+                                    Button(action: {
+                                        self.showLeiBieXuanZheView = true
+                                    }, label: {
+                                        leiBie == "" ? Text("选择类别") : Text("更改")
+                                    }).sheet(isPresented: $showLeiBieXuanZheView, content: {
+                                        LeiBieXuanZheView(leiBieGet: $leiBie)
+                                    })
+                                }
+                            }
+                            
                         }
-                        HStack{
-                            leiBie == "" ? Text("分类：").foregroundColor(.red) : Text("分类：").foregroundColor(Color("wwysBlack"))
-                            Text(leiBie)
-                                .foregroundColor(.gray)
-                            Spacer()
-                            Button(action: {
-                                self.showLeiBieXuanZheView = true
-                            }, label: {
-                                leiBie == "" ? Text("选择类别") : Text("更改")
-                            }).sheet(isPresented: $showLeiBieXuanZheView, content: {
-                                LeiBieXuanZheView(leiBieGet: $leiBie)
-                            })
+                        .onChange(of: leiBie) {newValue in
+                            suLiang = 1
+                            if leiBie == "车辆" {
+                                danWei = "辆"
+                            }
+                            if leiBie == "油库" {
+                                danWei = "升"
+                            }
+                            if leiBie != "车辆" && leiBie != "油库" {
+                                danWei = "个"
+                            }
                         }
                         HStack{
                             xiangMu == "" ? Text("所属部门：").foregroundColor(.red) : Text("所属部门：").foregroundColor(Color("wwysBlack"))
@@ -236,6 +360,7 @@ struct AddWuZiView: View {
                     
                 })
             })
+            .textFieldStyle(.automatic)
             .gesture(
             DragGesture()
                 .onChanged{
@@ -247,7 +372,7 @@ struct AddWuZiView: View {
                 }
             )
             .listStyle(.grouped)
-            .navigationBarTitle("新增物资")
+            .navigationBarTitle("新增\(autoWuZiBiaoTi(leixing: leixing, mingChengBool: mingChengBool, mingCheng: mingCheng))")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(leading: Button(action: {
                 dismissAddWuZiView()
@@ -263,13 +388,72 @@ struct AddWuZiView: View {
                 
             }, label: {
                 Text("完成")
-                
-            }))
+            }).disabled(!editWuZiXinXiPanDuan()))
             .alert(isPresented: self.$isShowAlert1, content: {
                 Alert(title: Text("提示"), message: Text("请完善信息"))
             })
         }
+        .onAppear {
+            addLeiXingPanDuan(leixing: leixing)
+        }
+    }
+    
+    //判断添加类型来设定默认值
+    func addLeiXingPanDuan(leixing: WuZiLeiXing) {
         
+        switch leixing {
+        case .车辆:
+            var bool: Bool = true
+            danWei = "辆"
+            suLiang = 1
+            //判断是否有车辆的默认类别，没有则创建一个，有则设置其分类为车辆
+            for i in leiBies {
+                if i.mingCheng == "车辆" {
+                    bool = false
+                }
+            }
+            if bool {
+                let newLeiBie = WuZiLeiBie(context: viewContext)
+                newLeiBie.id = UUID()
+                newLeiBie.mingCheng = "车辆"
+                newLeiBie.beiZhu = "此为系统级类别，无法修改或删除。"
+                do{
+                    try viewContext.save()
+                } catch {
+                    let nsError = error as NSError
+                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                }
+                leiBie = "车辆"
+            } else {
+                leiBie = "车辆"
+            }
+        case .油库:
+            var bool: Bool = true
+            danWei = "升"
+            //判断是否有油库的默认类别，米有则创建一个，有则设置其分类为油库
+            for i in leiBies {
+                if i.mingCheng == "油库" {
+                    bool = false
+                }
+            }
+            if bool {
+                let newLeiBie = WuZiLeiBie(context: viewContext)
+                newLeiBie.id = UUID()
+                newLeiBie.mingCheng = "油库"
+                newLeiBie.beiZhu = "此为系统级类别，无法修改或删除。"
+                do{
+                    try viewContext.save()
+                } catch {
+                    let nsError = error as NSError
+                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                }
+                leiBie = "油库"
+            } else {
+                leiBie = "油库"
+            }
+        default: break
+            
+        }
     }
     
     func editWuZiXinXiPanDuan() -> Bool {
@@ -324,6 +508,34 @@ struct AddWuZiView: View {
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
+    
+//    func ceshi(int: Int) {
+//        for i in 1...int {
+//            let newWuZi = WuZi(context: viewContext)
+//            newWuZi.id = UUID()
+//            newWuZi.mingCheng = "mingCheng\(i)"
+//            newWuZi.bianHao = "bianHao\(i)"
+//            newWuZi.suLiang = 1 + Int32(i)
+//            newWuZi.danWei = "danWei\(i)"
+//            newWuZi.pinPai = "pinPai\(i)"
+//            newWuZi.nengYuanLeiBie = "nengYuanLeiBie\(i)"
+//            newWuZi.guiGe = "guiGe\(i)"
+//            newWuZi.ruKuShiJian = Date()
+//            newWuZi.cunFangWeiZhi = "cunFangWeiZhi\(i)"
+//            newWuZi.baoXiu = false
+//            newWuZi.baoZhi = false
+//            newWuZi.caiGouDi = "caiGouDi\(i)"
+//            
+//            do{
+//                try viewContext.save()
+//            } catch {
+//                let nsError = error as NSError
+//                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+//            }
+//        }
+//        
+//        
+//    }
 }
 
 //struct AddWuZiView_Previews: PreviewProvider {

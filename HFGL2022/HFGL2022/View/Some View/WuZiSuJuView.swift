@@ -18,8 +18,8 @@ struct WuZiSuJuView: View {
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \RenYuan.xingMing, ascending: true)], animation: .default)
     var renYuans: FetchedResults<RenYuan>
     
-    
-    
+    let isSheetMolde: Bool
+    @Environment(\.dismiss) private var dismiss
     
     @State var edit: Bool = false
     @State private var isShowAlert1: Bool = false
@@ -37,7 +37,7 @@ struct WuZiSuJuView: View {
     @State var danWei: String
     @State var suLiang: Int32
     @State var xiangMu: String
-    @State var bianHao: String
+    @State var bianHao: Int32
     @State var leiBie: String
     @State var mingCheng: String
     @State var tuPian: String
@@ -121,8 +121,9 @@ struct WuZiSuJuView: View {
                                         .foregroundColor(.gray)
                                 }
                                 HStack{
-                                    bianHao == "" ? Text("编号：").foregroundColor(.red) : Text("编号：")
-                                    TextField("请输入物资编号", text: $bianHao)
+                                    bianHao == 0 ? Text("编号：").foregroundColor(.red) : Text("编号：")
+                                    Text("#").foregroundColor(.gray)
+                                    TextField("请输入编号", value: $bianHao, formatter: NumberFormatter())
                                         .foregroundColor(.gray)
                                 }
                                 HStack{
@@ -207,7 +208,7 @@ struct WuZiSuJuView: View {
                             if !edit {
                                 HStack{
                                     Text("编号：")
-                                    Text("\(bianHao)")
+                                    Text("# \(bianHao)")
                                         .foregroundStyle(.gray)
 //                                    Spacer()
                                 }
@@ -407,18 +408,12 @@ struct WuZiSuJuView: View {
                                                 for: nil)
             }
         )
-        .navigationBarTitle("物资详情")
+        .navigationBarTitle(edit ? "编辑信息" : "物品详情")
         .navigationBarTitleDisplayMode(.inline)
         .listStyle(.grouped)
 //        .navigationBarItems(trailing: )
         .navigationBarBackButtonHidden(edit ? true : false)
-        .navigationBarItems(leading: Button(action: {
-            withAnimation {edit = false}
-        }, label: {
-            if edit {
-                Text("取消")
-            }
-        }), trailing: Button(action: {
+        .navigationBarItems(leading: xAnNiu(edit: $edit, bool: isSheetMolde), trailing: Button(action: {
             if edit {
                 if editWuZiXinXiPanDuan() {
                     editWuZiDoneAndSave()
@@ -431,12 +426,42 @@ struct WuZiSuJuView: View {
             }
             
         }, label: {
-            edit ? Text("完成") : Text("编辑")
+            if edit {
+                Text("完成")
+            }
+            else {
+                Text("编辑")
+            }
+//            edit ? Text("完成") : Text("编辑")
             
-        }))
+        }).disabled(!editWuZiXinXiPanDuan()).controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule))
         .alert(isPresented: self.$isShowAlert1, content: {
             Alert(title: Text("请完善信息"), message: Text("提示：红色的项目未必填项。"))
         })
+    }
+    //关闭、取消按钮
+    private struct xAnNiu: View {
+        @Binding var edit: Bool
+        let bool: Bool
+        @Environment(\.dismiss) private var dismiss
+        var body: some View{
+            if edit {
+                Button {
+                    withAnimation {edit = false}
+                } label: {
+                    Text("取消")
+                }
+                .controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule).opacity(edit ? 1 : 0)
+            }
+            if bool {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("关闭")
+                }
+                .controlSize(.small).buttonStyle(.bordered).buttonBorderShape(.capsule)
+            }
+        }
     }
     public func editWuZiXinXiPanDuan() -> Bool {
         if mingCheng == "" || suLiang < 0 ||  danWei == "" || leiBie == "" || xiangMu == "" {
@@ -578,92 +603,91 @@ struct LeiBieXuanZheView: View {
             }))
         }
     }
-    struct AddWuZhiLeiBieView: View {
-        @State private var isShowAlert1: Bool = false
-        @Environment(\.dismiss) var dismissAddLeiBieView
-        @Environment(\.managedObjectContext) private var viewContext
-        @State var mingCheng: String = ""
-        @State var beiZhu: String = ""
-        var body: some View {
-            NavigationStack{
-                List(content: {
-                    Section(content: {
-                        HStack{
-                            Text("类别名称：")
-                            TextField("请输入类别名称", text: $mingCheng)
-                                .foregroundColor(.gray)
-                        }
-                    })
-                    Section(content: {
-                        VStack(alignment: .leading){
-                            Text("备注：")
-                            TextEditor(text: $beiZhu)
-                                .frame(height: 140)
-                        }
-                    })
-                })
-                .listStyle(.grouped)
-                .gesture(
-                DragGesture()
-                    .onChanged{
-                        _ in
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
-                                                        to: nil,
-                                                        from: nil,
-                                                        for: nil)
+}
+struct AddWuZhiLeiBieView: View {
+    @State private var isShowAlert1: Bool = false
+    @Environment(\.dismiss) var dismissAddLeiBieView
+    @Environment(\.managedObjectContext) private var viewContext
+    @State var mingCheng: String = ""
+    @State var beiZhu: String = ""
+    var body: some View {
+        NavigationStack{
+            List(content: {
+                Section(content: {
+                    HStack{
+                        Text("类别名称：")
+                        TextField("请输入类别名称", text: $mingCheng)
+                            .foregroundColor(.gray)
                     }
-                )
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(leading: Button(action: {
-                    dismissAddLeiBieView()
-                }, label: {
-                    Text("取消")
-                }), trailing:
-                    HStack {
-                        //Spacer()
-                        //EditButton()
-                        Spacer()
-                        Button(action: {
-                            if xinXiPanDuan() {
-                                addLeiBieAction()
-                                dismissAddLeiBieView()
-                            }else{
-                                self.isShowAlert1.toggle()
-                            }
-    //                        self.editMode?.wrappedValue = .active == self.editMode?.wrappedValue ? .inactive : .active
-                        }) {
-                            Text("完成")
-    //                        Text(.active == self.editMode?.wrappedValue ? "Done" : "Edit")
+                })
+                Section(content: {
+                    VStack(alignment: .leading){
+                        Text("备注：")
+                        TextEditor(text: $beiZhu)
+                            .frame(height: 140)
+                    }
+                })
+            })
+            .listStyle(.grouped)
+            .gesture(
+            DragGesture()
+                .onChanged{
+                    _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
+                                                    to: nil,
+                                                    from: nil,
+                                                    for: nil)
+                }
+            )
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(leading: Button(action: {
+                dismissAddLeiBieView()
+            }, label: {
+                Text("取消")
+            }), trailing:
+                HStack {
+                    //Spacer()
+                    //EditButton()
+                    Spacer()
+                    Button(action: {
+                        if xinXiPanDuan() {
+                            addLeiBieAction()
+                            dismissAddLeiBieView()
+                        }else{
+                            self.isShowAlert1.toggle()
                         }
-                        Spacer()
-                })
-                .alert(isPresented: self.$isShowAlert1, content: {
-                    Alert(title: Text("提示"), message: Text("请完善信息"))
-                })
-            }
-        }
-        private func xinXiPanDuan() -> Bool {
-            if mingCheng == "" {
-                return false
-            }else{return true}
-        }
-        private func addLeiBieAction() {
-            let newLeiBie = WuZiLeiBie(context: viewContext)
-            newLeiBie.mingCheng = mingCheng
-            newLeiBie.beiZhu = beiZhu
-            newLeiBie.id = UUID()
-//            LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: nil, zhiwu: nil, xiangmu: nil, lieBie: "物资类别_新增", beizhu: mingCheng, houbeizhu: nil, sanRenYuan: nil, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
-            do{
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-            
+//                        self.editMode?.wrappedValue = .active == self.editMode?.wrappedValue ? .inactive : .active
+                    }) {
+                        Text("完成")
+//                        Text(.active == self.editMode?.wrappedValue ? "Done" : "Edit")
+                    }
+                    Spacer()
+            })
+            .alert(isPresented: self.$isShowAlert1, content: {
+                Alert(title: Text("提示"), message: Text("请完善信息"))
+            })
         }
     }
+    private func xinXiPanDuan() -> Bool {
+        if mingCheng == "" {
+            return false
+        }else{return true}
+    }
+    private func addLeiBieAction() {
+        let newLeiBie = WuZiLeiBie(context: viewContext)
+        newLeiBie.mingCheng = mingCheng
+        newLeiBie.beiZhu = beiZhu
+        newLeiBie.id = UUID()
+//            LiuShuiJiLu_RenYuan(newLiuShui: LiuShui(context: viewContext), renyuan: nil, zhiwu: nil, xiangmu: nil, lieBie: "物资类别_新增", beizhu: mingCheng, houbeizhu: nil, sanRenYuan: nil, sanWuZi: nil, sanXiangMu: nil, sanZhiWu: nil, qianZhiWu: nil, qianXiangMu: nil)
+        do{
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+        
+    }
 }
-
 
 struct WuZhiXiangMuXuanZheView: View {
     @State var showXiangMuAdd: Bool = false

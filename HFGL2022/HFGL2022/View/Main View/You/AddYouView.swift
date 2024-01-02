@@ -325,7 +325,7 @@ struct AddYouView: View {
                                     Spacer()
                                 }
                             }).sheet(isPresented: $showAddWuZiView, content: {
-                                AddWuZiView(bianHao: "")
+                                AddWuZiView(leixing: WuZiLeiXing.车辆, mingChengBool: true, bianHao: 0)
                             })
                         }
                     }
@@ -460,7 +460,7 @@ struct AddYouView: View {
                                     Spacer()
                                 }
                             }).sheet(isPresented: $showAddRenYuanView, content: {
-                                AddRenYuanView()
+                                AddRenYuanView(leixing: ZhiWuLeiXing.司机)
                             })
                         }
                     }
@@ -599,7 +599,7 @@ struct AddYouView: View {
                                     Spacer()
                                 }
                             }).sheet(isPresented: $showAddWuZiView, content: {
-                                AddWuZiView(bianHao: "#001")
+                                AddWuZiView(leixing: WuZiLeiXing.油库, mingChengBool: true, bianHao: 0)
                             })
                         }
                     }

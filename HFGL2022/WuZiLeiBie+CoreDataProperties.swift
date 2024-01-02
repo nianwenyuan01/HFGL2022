@@ -22,6 +22,12 @@ extension WuZiLeiBie {
     @NSManaged public var suLiang: Int32
     @NSManaged public var wuZi: NSSet?
 
+    //Array包装器
+    public var wuZiArray: [WuZi] {
+        let set = wuZi as? Set<WuZi> ?? []
+        return set.sorted(by: {$0.wName < $1.wName})
+    }
+    
 }
 
 // MARK: Generated accessors for wuZi

@@ -33,6 +33,9 @@ struct AddRenYuanView: View {
     @State private var showZhiWuXuanZheView = false
 //    @Environment(\.editMode) var editMode
     @Environment(\.dismiss) var dismiss1
+    
+    let leixing: ZhiWuLeiXing
+    
     @State var xingMing: String = ""
     @State var telArray: [Int] = [1]
     @State var telHaoMa1: String = ""
@@ -59,6 +62,7 @@ struct AddRenYuanView: View {
     @State var hunYin: Bool = true
     @State var wenHua: String = ""
     @State var beiZhu: String = ""
+    
 //    @FocusState private var focus: Bool
     
     
@@ -74,6 +78,9 @@ struct AddRenYuanView: View {
                 .frame(width: 60, height: 60)
                 .cornerRadius(30)
                 .padding(.leading)
+            
+
+            
             List {
                 Group(content: {
                     //                姓名
@@ -173,28 +180,41 @@ struct AddRenYuanView: View {
                                     })
                                 })
                     //                职务
-                                    Section(content: {
-                                        Button(action: {
-                                            self.showZhiWuXuanZheView = true
-                                        }, label: {
-                                            HStack{
-                                                if zhiWu == "" {
-                                                    Text("职务：")
-                                                        .foregroundColor(Color.red)
-                                                }else{Text("职务：")
-                                                    .foregroundColor(Color("wwysBlack"))}
-                                                if zhiWu != "" {
-                                                    Text("\(zhiWu)")
-                                                        .foregroundColor(Color.gray)
-                                                    Spacer()
-                                                    Text("更改")
-                                                }else{
-                                                    Spacer()
-                                                    Text("选择职务")
-                                                }
-                                            }
-                                        }).sheet(isPresented: self.$showZhiWuXuanZheView, content: {ZhiWuXZuanZheView(zhiWuText: $zhiWu)})
-                                    })
+                    if leixing != ZhiWuLeiXing.默认 {
+                        if zhiWu == "司机" {
+                            Section {
+                                HStack {
+                                    Text("职务：")
+                                    Text(zhiWu)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        Section(content: {
+                            Button(action: {
+                                self.showZhiWuXuanZheView = true
+                            }, label: {
+                                HStack{
+                                    if zhiWu == "" {
+                                        Text("职务：")
+                                            .foregroundColor(Color.red)
+                                    }else{Text("职务：")
+                                        .foregroundColor(Color("wwysBlack"))}
+                                    if zhiWu != "" {
+                                        Text("\(zhiWu)")
+                                            .foregroundColor(Color.gray)
+                                        Spacer()
+                                        Text("更改")
+                                    }else{
+                                        Spacer()
+                                        Text("选择职务")
+                                    }
+                                }
+                            }).sheet(isPresented: self.$showZhiWuXuanZheView, content: {ZhiWuXZuanZheView(zhiWuText: $zhiWu)})
+                        })
+                    }
                     //                性别
                                     Section(content: {
                                         Button(action: {
@@ -486,39 +506,24 @@ struct AddRenYuanView: View {
                                                     for: nil)
                 }
             )
-            .navigationBarTitle("添加人员")
+            .navigationBarTitle("添加\(autoRenYuanBiaoTi(leixing: leixing))")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(leading: Button(action: {
                 dismiss1()
             }, label: {
                 Text("取消")
-            }), trailing:
-                HStack {
-                    //Spacer()
-                    //EditButton()
-                    Spacer()
-                    Button(action: {
-                        if xinXiPanDuan() {
-                            if chaChong() {
-                                addRenYuanAction()
-                            }else{self.alertType = .congming}
-                        }else{
-//                            self.isShowAlert1.toggle()
-                            self.alertType = .jiancha
-                        }
-//                        self.editMode?.wrappedValue = .active == self.editMode?.wrappedValue ? .inactive : .active
-                    }) {
-                        Text("完成")
-//                        Text(.active == self.editMode?.wrappedValue ? "Done" : "Edit")
-                    }
-                    Spacer()
-            })
-//            .environment(.editButton, EditButton())
-//            .environment(.editMode, .active)
+            }), trailing: Button(action: {
+                if xinXiPanDuan() {
+                    if chaChong() {
+                        addRenYuanAction()
+                    }else{self.alertType = .congming}
+                }else{
+                    self.alertType = .jiancha
+                }
+            }, label: {
+                Text("完成")
+            }).disabled(!xinXiPanDuan()))
             .listStyle(.grouped)
-//            .alert(isPresented: self.$isShowAlert1) {
-//                Alert(title: Text("请完善信息"), message: Text("提示：红色的项目未必填项。"))
-//            }
             .alert(item: $alertType, content: { i in
                 switch i {
                 case .jiancha:
@@ -527,13 +532,43 @@ struct AddRenYuanView: View {
                     return Alert(title: Text("错误"), message: Text("与现有人员重"))
                 }
             })
-//            .alert(isPresented: self.$isShowAlertCongMing, content: {
-//                Alert(title: Text("错误"), message: Text("与现有人员重名。"))
-//            })
-            
         }
-        
+        .onAppear {
+            addLeiXingPanDuan(leixing: leixing)
+        }
     }
+    //判断添加类型来设定默认值
+    func addLeiXingPanDuan(leixing:ZhiWuLeiXing) {
+        switch leixing {
+        case .默认:
+            break
+        case .司机:
+            var bool: Bool = true
+            //判断是否有司机的类型，没有则创建一个，有则设置其分类为司机
+            for i in zhiWus {
+                if i.mingCheng == "司机" {
+                    bool = false
+                }
+            }
+            if bool {
+                let newLeiBie = ZhiWu(context: viewContext)
+                newLeiBie.id = UUID()
+                newLeiBie.mingCheng = "司机"
+                newLeiBie.beiZhu = "此为系统级类别，无法修改或删除。"
+                do{
+                    try viewContext.save()
+                } catch {
+                    let nsError = error as NSError
+                    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+                }
+                zhiWu = "司机"
+            }
+            else {
+                zhiWu = "司机"
+            }
+        }
+    }
+    
 //    查重
     private func chaChong() -> Bool {
         var bool: Bool = true
@@ -639,6 +674,9 @@ struct AddRenYuanView: View {
         }
         dismiss1()
     }
+    
+    
+    
 }
 
 
@@ -654,8 +692,8 @@ struct AddRenYuanView: View {
 
 
 
-struct AddRenYuanView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddRenYuanView()
-    }
-}
+//struct AddRenYuanView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AddRenYuanView()
+//    }
+//}

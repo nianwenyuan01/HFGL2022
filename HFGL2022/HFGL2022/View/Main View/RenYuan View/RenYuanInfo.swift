@@ -10,9 +10,9 @@ import CoreData
 
 struct RenYuanInfo: View {
     
-    @State var currentType: String = "Popular"
-    @Namespace var animation
-    @State var headerOffsets: (CGFloat,CGFloat) = (0,0)
+//    @State var currentType: String = "Popular"
+//    @Namespace var animation
+//    @State var headerOffsets: (CGFloat,CGFloat) = (0,0)
     
     
     let isShowDismissButton: Bool
@@ -29,55 +29,14 @@ struct RenYuanInfo: View {
             
             if !edit {
                 ForEach(renYuans, id: \.self, content: {
-                    renyuan in
-                    if renyuan.id == renYuanId {
-                        
-                        VStack{
-                            RenYuanInfoImageName_View(image: renyuan.zaoPian ?? "touxiang111", name: renyuan.wName, xingBie: renyuan.xingBie, jiaZhao: renyuan.jiaZhao ?? "C", xiangMuArray: renyuan.xiangMuArray, zhiWu: renyuan.zhiWu?.mingCheng ?? "职务1",zaiZhi: renyuan.zaiZhi,  baoXian: renyuan.baoXian, baoXianRiQi: renyuan.baoXianRiQi ?? Date.parse("2022-01-01"), baoXianShiChang: renyuan.baoXianShiChang)
-                            RenYuanSuJuInfo_View(liZhiYuanYin: renyuan.liZhiYuanYin ?? "", chuShengRiQi: renyuan.chuShengRiQi!, hunYin: renyuan.hunYin, wenHua: renyuan.wenHua ?? "", ruZhiShiJian: renyuan.ruZhiShiJian!, baoXian: renyuan.baoXian, baoXianRiQi: renyuan.baoXianRiQi ?? Date(), baoXianShiChang: renyuan.baoXianShiChang, shenFenZheng: renyuan.shenFenZheng!, zhuZhi: renyuan.zhuZhi!, beiZhu: renyuan.beiZhu ?? "", telArray: renyuan.telArray, wuZiArray: renyuan.wuZiArray, liuShuiArray: renyuan.liuShuiArray)
+                    renYuan in
+                    if renYuan.id == renYuanId {
+                        VStack {
+                            NewRenYuanSuJuView(renYuan: renYuan, isSheetMolde: true, xingMing: renYuan.xingMing ?? "", xingBie: renYuan.xingBie, zaiZhi: renYuan.zaiZhi, zhuZhi: renYuan.zhuZhi ?? "", wenHua: renYuan.wenHua ?? "", shenFenZheng: renYuan.shenFenZheng ?? "", ruZhiShiJian: renYuan.ruZhiShiJian ?? Date(), nianLing: renYuan.nianLing, liZhiYuanYin: renYuan.liZhiYuanYin ?? "", jiaZhao: renYuan.jiaZhao  ?? "", hunYin: renYuan.hunYin, chuShengRiQi: renYuan.chuShengRiQi ?? Date(), beiZhu: renYuan.beiZhu  ?? "", baoXianShiChang: renYuan.baoXianShiChang, baoXianRiQi: renYuan.baoXianRiQi ?? Date(), baoXian: renYuan.baoXian,zhiWu: renYuan.zhiWu?.mingCheng ?? "", tel: renYuan.telArray, telArray: telArrayArray(array: renYuan.telArray), tel1: telSuLiang(array: renYuan.telArray)[0], tel2: telSuLiang(array: renYuan.telArray)[1], tel3: telSuLiang(array: renYuan.telArray)[2], tel4: telSuLiang(array: renYuan.telArray)[3], tel5: telSuLiang(array: renYuan.telArray)[4], xiangMuArray: xiangMuArrayArray(array: renYuan.xiangMuArray), xiangMu1: xiangMuSuLiang(array: renYuan.xiangMuArray)[0], xiangMu2: xiangMuSuLiang(array: renYuan.xiangMuArray)[1], xiangMu3: xiangMuSuLiang(array: renYuan.xiangMuArray)[2])
                         }
-                    }
-                })
-                .toolbar(content: {
-                    ToolbarItem(placement: .navigationBarLeading, content: {
-                        if isShowDismissButton {
-                            Button(action: {
-                                dismiss1()
-                            }, label: {
-                                Image(systemName: "star")
-                            })
-                        }
-                    })
-                    ToolbarItem(placement: .navigationBarTrailing, content: {
-                        if viewSheetMolde {
-                            Button(action: {
-                                dismiss1()
-                            }, label: {
-//                                Text("关闭")
-                                Image(systemName: "star")
-                            })
-                        }else{
-                            Button(action: {
-                                if !edit {
-                                    withAnimation{
-                                        edit.toggle()
-                                    }
-                                }
-                            }, label: {
-                                Text("编辑")
-                            })
-                        }
-                    })
-                })
-            }else{
-                ForEach(renYuans, id: \.self, content: {
-                    renyuan in
-                    if renyuan.id == renYuanId {
-                        EditRenYuanView(edit: $edit, renYuan: renyuan, xingMing: renyuan.xingMing ?? "", telArray: telArrayArray(array: renyuan.telArray), telHaoMa1: telSuLiang(array: renyuan.telArray)[0], telHaoMa2: telSuLiang(array: renyuan.telArray)[1], telHaoMa3: telSuLiang(array: renyuan.telArray)[2], telHaoMa4: telSuLiang(array: renyuan.telArray)[3], telHaoMa5: telSuLiang(array: renyuan.telArray)[4], xingBie: renyuan.xingBie, chuShengRiQi: renyuan.chuShengRiQi ?? Date(), zhiWu: renyuan.zhiWu?.mingCheng ?? "", xiangMuArray: xiangMuArrayArray(array: renyuan.xiangMuArray), xiangMu1: xiangMuSuLiang(array: renyuan.xiangMuArray)[0], xiangMu2: xiangMuSuLiang(array: renyuan.xiangMuArray)[1], xiangMu3: xiangMuSuLiang(array: renyuan.xiangMuArray)[2], shenFenZheng: renyuan.shenFenZheng ?? "", jiaZhao: renyuan.jiaZhao ?? "", zhuZhi: renyuan.zhuZhi ?? "", baoXian: renyuan.baoXian, baoXianRiQi: renyuan.baoXianRiQi ?? Date(), baoXianShiChang: renyuan.baoXianShiChang, zaiZhi: renyuan.zaiZhi, liZhiYuanYin: renyuan.liZhiYuanYin ?? "", ruZhiRiQi: renyuan.ruZhiShiJian ?? Date(), hunYin: renyuan.hunYin, wenHua: renyuan.wenHua ?? "", beiZhu: renyuan.beiZhu ?? "")
                     }
                 })
             }
-                
         }
     }
 //    人员电话数量生成的Int数组，生成后才不会越界

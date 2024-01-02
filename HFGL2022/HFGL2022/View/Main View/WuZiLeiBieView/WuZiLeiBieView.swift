@@ -9,18 +9,34 @@ import SwiftUI
 import CoreData
 
 struct WuZiLeiBieView: View {
+    @Environment(\.dismiss) var dismiss
+    @State private var isShowAddNewWuZiLeiBieView: Bool = false
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \WuZiLeiBie.mingCheng, ascending: true)], animation: .default)
     var leiBies: FetchedResults<WuZiLeiBie>
     var body: some View {
         NavigationStack{
             List(content: {
-                ForEach(leiBies, id: \.self, content: {
-                    leiBie in
-                    NavigationLink(destination: {}, label: {
-                        Text(leiBie.mingCheng ?? "")
-                    })
-                }).onDelete(perform: deleteItems)
+                
+                Section ("自定义分类") {
+                    ForEach(leiBies, id: \.self, content: {
+                        leiBie in
+                        if leiBie.mingCheng != "车辆" && leiBie.mingCheng != "油库" {
+                            NavigationLink(destination: {WuZiLeiBieInFoView(wuZiLeiBie: leiBie, mingCheng: leiBie.mingCheng!, beiZhu: leiBie.beiZhu ?? "")}, label: {
+                                Text(leiBie.mingCheng ?? "")
+                            })
+                        }
+                    }).onDelete(perform: deleteItems)
+                }
+                Section ("系统默认分类") {
+                    ForEach(leiBies, id: \.self) { leiBie in
+                        if leiBie.mingCheng == "车辆" || leiBie.mingCheng == "油库" {
+                            NavigationLink(destination: {WuZiLeiBieInFoView(wuZiLeiBie: leiBie, mingCheng: leiBie.mingCheng!, beiZhu: leiBie.beiZhu ?? "")}, label: {
+                                Text(leiBie.mingCheng ?? "")
+                            })
+                        }
+                    }
+                }
             })
             .toolbar(content: {
                 ToolbarItem(placement: .navigationBarTrailing,  content: {
@@ -28,9 +44,12 @@ struct WuZiLeiBieView: View {
                 })
                 ToolbarItem(content: {
                     Button(action: {
-//
-                    }) {
-                        Label("Add Item", systemImage: "plus")
+                        isShowAddNewWuZiLeiBieView = true
+                    }, label: {
+                        Image(systemName: "plus")
+                    })
+                    .sheet(isPresented: $isShowAddNewWuZiLeiBieView) {
+                        AddWuZhiLeiBieView()
                     }
                 })
             })
